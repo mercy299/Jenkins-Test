@@ -15,6 +15,22 @@ pipeline {
             }
         }
 
+        stage('Sonar Analysis') {
+          steps {
+            withSonarQubeEnv('SonarQube') {
+              sh "sonar-scanner"
+            }
+          }
+        }
+        
+        stage('Quality Gate') {
+          steps {
+            timeout(time: 1, unit: 'HOURS') {
+              waitForQualityGate abortPipeline: true
+            }
+          }
+        }
+
         stage('Test') {
             steps {
                 echo "Running test step..."
